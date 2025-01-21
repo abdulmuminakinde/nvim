@@ -36,7 +36,7 @@ return {
 			mappings = {},
 
 			templates = {
-				subdir = "Templates",
+				subdir = "Atomic Notes",
 				date_format = "%Y-%m-%d",
 				time_format = "%H:%M",
 				tags = "",
