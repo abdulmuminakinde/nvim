@@ -1,7 +1,24 @@
 return {
+	-- Catppuccin (higher priority and appears first)
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		priority = 1000, -- Higher priority than Tokyo Night
+		config = function()
+			require("catppuccin").setup({
+				flavour = "mocha", -- latte, frappe, macchiato, mocha
+				background = {
+					light = "latte",
+					dark = "mocha",
+				},
+			})
+			vim.cmd("colorscheme catppuccin") -- Set Catppuccin as the default
+		end,
+	},
+	-- Tokyo Night (lower priority and appears second)
 	{
 		"folke/tokyonight.nvim",
-		priority = 1000,
+		priority = 1000, -- Lower priority than Catppuccin
 		config = function()
 			local bg = "#011628"
 			local bg_dark = "#011423"
@@ -35,24 +52,11 @@ return {
 			})
 		end,
 	},
-	{
-		"catppuccin/nvim",
-		name = "catppuccin",
-		priority = 1000,
-		config = function()
-			require("catppuccin").setup({
-				flavour = "mocha", -- latte, frappe, macchiato, mocha
-				background = {
-					light = "latte",
-					dark = "mocha",
-				},
-			})
-		end,
-	},
+	-- Toggle functionality
 	{
 		"nvim-lua/plenary.nvim", -- Optional, but useful for some utility functions
 		config = function()
-			local colorscheme = "tokyonight" -- Default colorscheme
+			local colorscheme = "catppuccin" -- Default colorscheme
 
 			-- Function to update lualine theme
 			local update_lualine_theme = function()
