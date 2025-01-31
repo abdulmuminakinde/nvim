@@ -1,7 +1,7 @@
 return {
 	{
 		"folke/tokyonight.nvim",
-		priority = 1000, -- make sure to load this before all the other start plugins
+		priority = 1000,
 		config = function()
 			local bg = "#011628"
 			local bg_dark = "#011423"
@@ -33,8 +33,59 @@ return {
 					colors.fg_sidebar = fg_dark
 				end,
 			})
-			-- load the colorscheme here
-			vim.cmd([[colorscheme tokyonight]])
+		end,
+	},
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		priority = 1000,
+		config = function()
+			require("catppuccin").setup({
+				flavour = "mocha", -- latte, frappe, macchiato, mocha
+				background = {
+					light = "latte",
+					dark = "mocha",
+				},
+			})
+		end,
+	},
+	{
+		"nvim-lua/plenary.nvim", -- Optional, but useful for some utility functions
+		config = function()
+			local colorscheme = "tokyonight" -- Default colorscheme
+
+			-- Function to update lualine theme
+			local update_lualine_theme = function()
+				require("lualine").setup({
+					options = {
+						theme = colorscheme, -- Use the colorscheme name as the lualine theme
+					},
+				})
+			end
+
+			-- Function to toggle between Tokyo Night and Catppuccin
+			local toggle_colorscheme = function()
+				if colorscheme == "tokyonight" then
+					colorscheme = "catppuccin"
+				else
+					colorscheme = "tokyonight"
+				end
+				vim.cmd("colorscheme " .. colorscheme)
+				update_lualine_theme() -- Update lualine theme after toggling
+				print("Colorscheme set to: " .. colorscheme)
+			end
+
+			-- Set the initial colorscheme
+			vim.cmd("colorscheme " .. colorscheme)
+			update_lualine_theme() -- Set the initial lualine theme
+
+			-- Keymap to toggle between colorschemes
+			vim.keymap.set(
+				"n",
+				"<leader>ct",
+				toggle_colorscheme,
+				{ noremap = true, silent = true, desc = "Toggle colorscheme" }
+			)
 		end,
 	},
 }
