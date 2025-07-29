@@ -21,7 +21,7 @@ return {
 		-- end
 
 		-- Optional: Set key mappings
-		vim.keymap.set("n", "<leader>db", ":DBUIToggle<CR>", { desc = "Toggle DB UI" })
+		vim.keymap.set("n", "<leader>da", ":DBUIToggle<CR>", { desc = "Toggle DB UI" })
 		vim.keymap.set("n", "<leader>dl", ":DBUILastQueryInfo<CR>", { desc = "Last Query Info" })
 	end,
 }

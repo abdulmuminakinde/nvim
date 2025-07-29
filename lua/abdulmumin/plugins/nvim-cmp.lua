@@ -28,6 +28,10 @@ return {
 			return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 		end
 
+		local has_copilot_suggestion = function()
+			local ok, suggestion = pcall(require, "copilot.suggestion")
+			return ok and suggestion.is_visible()
+		end
 		cmp.setup({
 			completion = {
 				completeopt = "menu,menuone,preview,noselect",
@@ -37,6 +41,7 @@ return {
 					luasnip.lsp_expand(args.body)
 				end,
 			},
+
 			mapping = cmp.mapping.preset.insert({
 				["<C-k>"] = cmp.mapping.select_prev_item(), -- previous suggestion
 				["<C-j>"] = cmp.mapping.select_next_item(), -- next suggestion
@@ -45,10 +50,13 @@ return {
 				["<C-Space>"] = cmp.mapping.complete(), -- show completion suggestions
 				["<C-e>"] = cmp.mapping.abort(), -- close completion window
 				["<CR>"] = cmp.mapping.confirm({ select = false }),
-				-- Tab navigation for snippets and suggestions
+				-- Tab navigation for snippets, completion, and Copilot
 				["<Tab>"] = cmp.mapping(function(fallback)
 					if cmp.visible() then
 						cmp.select_next_item()
+					elseif has_copilot_suggestion() then
+						-- Accept Copilot suggestion if available
+						vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<C-g>u<CR>", true, true, true), "n")
 					elseif luasnip.expand_or_jumpable() then
 						luasnip.expand_or_jump()
 					elseif has_words_before() then
@@ -57,6 +65,7 @@ return {
 						fallback()
 					end
 				end, { "i", "s" }),
+
 				["<S-Tab>"] = cmp.mapping(function(fallback)
 					if cmp.visible() then
 						cmp.select_prev_item()
@@ -68,6 +77,7 @@ return {
 				end, { "i", "s" }),
 			}),
 			sources = cmp.config.sources({
+				{ name = "copilot" },
 				{ name = "nvim_lsp" },
 				{ name = "luasnip" }, -- snippets
 				{ name = "buffer" }, -- text within current buffer

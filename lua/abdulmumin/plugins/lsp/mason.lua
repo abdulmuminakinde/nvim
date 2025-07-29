@@ -47,8 +47,10 @@ return {
 				"prettier", -- prettier formatter
 				"stylua", -- lua formatter
 				"isort", -- python formatter
+				"mypy",
+				"debugpy",
+				"ruff", -- python formatte
 				"black",
-				"pylint", -- python formatte
 				"eslint_d",
 				"golangci-lint",
 				"golines",

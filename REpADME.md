@@ -1,6 +1,6 @@
 # NVIM dotfiles
 
-This repo contains my setup for neovim (uding lazy.nvim) configuration.
+This repo contains my setup for neovim (using lazy.nvim) configuration.
 
 ## Usage
 

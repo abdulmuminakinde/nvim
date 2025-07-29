@@ -1,3 +1,5 @@
+M = {}
+
 -- set leader key to space
 vim.g.mapleader = " "
 
@@ -66,3 +68,10 @@ vim.keymap.set("n", "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", { desc = "Quic
 -- Buffers
 -- keymap.set("n", "<Tab>", "<cmd>bnext<CR>", opts)
 -- keymap.set("n", "<S-Tab>", "<cmd>bprevious<CR>", opts)
+--
+-- Copilot
+function M.setup_copilot_keymaps()
+	return {
+		{ "<leader>ap", ":Copilot panel<CR>", desc = "Copilot panel" },
+	}
+end

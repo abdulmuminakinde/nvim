@@ -30,6 +30,7 @@ return {
 			keymaps = {
 				["<C-c>"] = false,
 				["q"] = "actions.close",
+				["<C-h>"] = false,
 				["<C-s>"] = false,
 			},
 		})

@@ -14,7 +14,7 @@ return {
 				markdown = { "prettier" },
 				graphql = { "prettier" },
 				lua = { "stylua" },
-				python = { "isort", "black" },
+				python = { "isort", "ruff", "black" },
 				sql = { "sql_formatter" }, -- Using sql-formatter for SQL files
 				go = { "golines", "gofumpt" },
 			},

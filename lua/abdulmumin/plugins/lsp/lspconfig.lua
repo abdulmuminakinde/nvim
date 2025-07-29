@@ -2,6 +2,8 @@ return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
+		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
 		"hrsh7th/cmp-nvim-lsp",
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 		{ "folke/neodev.nvim", opts = {} },
@@ -68,11 +70,38 @@ return {
 		local capabilities = cmp_nvim_lsp.default_capabilities()
 
 		-- Change the Diagnostic symbols in the sign column (gutter)
-		local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
-		for type, icon in pairs(signs) do
-			local hl = "DiagnosticSign" .. type
-			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-		end
+		-- Modern approach for setting diagnostic signs
+		local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
+
+		local config = {
+			signs = {
+				active = signs,
+			},
+			update_in_insert = false,
+			underline = true,
+			severity_sort = true,
+			float = {
+				focused = false,
+				style = "minimal",
+				border = "rounded",
+				source = "always",
+				header = "",
+				prefix = "",
+			},
+			virtual_text = {
+				prefix = "●",
+				spacing = 2, -- Adjust spacing between text and diagnostic
+			},
+		}
+
+		-- Configure diagnostic signs AND make sure they display in the sign column
+		vim.diagnostic.config(config)
+
+		-- Apply the signs
+		-- for type, icon in pairs(signs) do
+		-- 	local hl = "DiagnosticSign" .. type
+		-- 	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+		-- end
 
 		-- Configure Mason-LSPConfig
 		mason_lspconfig.setup({
@@ -136,6 +165,7 @@ return {
 					on_attach = common_on_attach,
 					filetypes = {
 						"html",
+						"typescript",
 						"typescriptreact",
 						"javascriptreact",
 						"css",
@@ -177,8 +207,9 @@ return {
 								typeCheckingMode = "basic",
 								autoSearchPaths = true,
 								useLibraryCodeForTypes = true,
-								diagnosticMode = "workspace",
+								diagnosticMode = "openFilesOnly",
 							},
+							exclude = { "venv", ".venv", "build", "dist", "__pycache__" },
 						},
 					},
 				})
