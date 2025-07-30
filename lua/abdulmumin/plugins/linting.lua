@@ -5,7 +5,7 @@ return {
 		local lint = require("lint")
 		lint.linters_by_ft = {
 			awk = { "gawk" },
-			go = { "codespell" }, -- Correct reference to our custom linter
+			go = { "golangcilint" }, -- Correct reference to our custom linter
 			html = { "tidy" },
 			javascript = { "eslint_d" },
 			python = { "ruff" },
