@@ -21,19 +21,27 @@ return {
 
 				-- set keybinds
 				opts.desc = "Show LSP references"
-				keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
+				keymap.set("n", "gR", function()
+					require("telescope.builtin").lsp_references({ reuse_win = true })
+				end, opts) -- show definition, references
 
 				opts.desc = "Go to declaration"
 				keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
 
 				opts.desc = "Show LSP definitions"
-				keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts) -- show lsp definitions
+				keymap.set("n", "gd", function()
+					require("telescope.builtin").lsp_definitions({ reuse_win = true })
+				end, opts) -- show lsp definitions
 
 				opts.desc = "Show LSP implementations"
-				keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts) -- show lsp implementations
+				keymap.set("n", "gi", function()
+					require("telescope.builtin").lsp_implementations({ reuse_win = true })
+				end, opts) -- show lsp implementations
 
 				opts.desc = "Show LSP type definitions"
-				keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
+				keymap.set("n", "gt", function()
+					require("telescope.builtin").lsp_type_definitions({ reuse_win = true })
+				end, opts) -- show lsp type definitions
 
 				opts.desc = "See available code actions"
 				keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
@@ -42,7 +50,9 @@ return {
 				keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts) -- smart rename
 
 				opts.desc = "Show buffer diagnostics"
-				keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
+				keymap.set("n", "<leader>D", function()
+					require("telescope.builtin").diagnostics({ bufnr = 0 })
+				end, opts) -- show  diagnostics for file
 
 				opts.desc = "Show line diagnostics"
 				keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts) -- show diagnostics for line
@@ -67,10 +77,10 @@ return {
 		vim.diagnostic.config({
 			signs = {
 				text = {
-					[vim.diagnostic.severity.ERROR] = " ",
-					[vim.diagnostic.severity.WARN] = " ",
+					[vim.diagnostic.severity.ERROR] = " ",
+					[vim.diagnostic.severity.WARN] = " ",
 					[vim.diagnostic.severity.HINT] = "󰠠 ",
-					[vim.diagnostic.severity.INFO] = " ",
+					[vim.diagnostic.severity.INFO] = " ",
 				},
 			},
 		})
@@ -93,24 +103,72 @@ return {
 			},
 		})
 
-		-- Vue Language Server (vue_ls, formerly Volar)
-		-- This server requires 'vtsls' for its core TypeScript language services.
-		-- Ensure 'vtsls' is installed (e.g., via `npm install -g @volar/vtsls` or Mason).
-		lspconfig.vue_ls.setup({
-			filetypes = { "vue", "javascript", "typescript", "javascriptreact", "typescriptreact" },
-			-- The 'on_attach' is usually not needed for basic setup if vtsls is found.
-			-- If you still face issues, consider explicit client enabling or path configuration.
-		})
-
-		-- Volar TypeScript Language Server (vtsls)
-		-- This is the dedicated TypeScript language server required by vue_ls.
-		-- It handles TypeScript/JavaScript features within Vue files and other JS/TS files.
+		-- VTSLS (TypeScript/JavaScript with Vue support)
+		-- This handles all TS/JS/Vue files with proper TypeScript integration
 		lspconfig.vtsls.setup({
 			filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact", "vue" },
 			init_options = {
 				hostInfo = "neovim",
 			},
+			settings = {
+				complete_function_calls = true,
+				vtsls = {
+					enableMoveToFileCodeAction = true,
+					autoUseWorkspaceTsdk = true,
+					experimental = {
+						completion = {
+							enableServerSideFuzzyMatch = true,
+						},
+					},
+					tsserver = {
+						globalPlugins = {
+							{
+								name = "@vue/typescript-plugin",
+								location = vim.fn.stdpath("data")
+									.. "/mason/packages/vue-language-server/node_modules/@vue/language-server",
+								languages = { "vue" },
+								configNamespace = "typescript",
+								enableForWorkspaceTypeScriptVersions = true,
+							},
+						},
+					},
+				},
+				typescript = {
+					updateImportsOnFileMove = { enabled = "always" },
+					suggest = {
+						completeFunctionCalls = true,
+					},
+					inlayHints = {
+						enumMemberValues = { enabled = true },
+						functionLikeReturnTypes = { enabled = true },
+						parameterNames = { enabled = "literals" },
+						parameterTypes = { enabled = true },
+						propertyDeclarationTypes = { enabled = true },
+						variableTypes = { enabled = false },
+					},
+				},
+				javascript = {
+					updateImportsOnFileMove = { enabled = "always" },
+					suggest = {
+						completeFunctionCalls = true,
+					},
+					inlayHints = {
+						enumMemberValues = { enabled = true },
+						functionLikeReturnTypes = { enabled = true },
+						parameterNames = { enabled = "literals" },
+						parameterTypes = { enabled = true },
+						propertyDeclarationTypes = { enabled = true },
+						variableTypes = { enabled = false },
+					},
+				},
+			},
 		})
+
+		-- Vue Language Server (DISABLED to prevent conflicts with vtsls)
+		-- We're using vtsls with Vue TypeScript plugin instead for better TS integration
+		-- lspconfig.vue_ls.setup({
+		-- 	autostart = false, -- Disabled to prevent conflicts
+		-- })
 
 		-- Tailwind CSS Language Server
 		lspconfig.tailwindcss.setup({
@@ -129,32 +187,11 @@ return {
 				"erb", -- Add if you use Ruby on Rails with Tailwind
 				"blade", -- Add if you use Laravel Blade with Tailwind
 			},
-			-- You might want to add settings like these for custom CSS files
-			-- settings = {
-			--     tailwindCSS = {
-			--         lint = {
-			--             cssValidation = "warn",
-			--             invalidApply = "error",
-			--             invalidConfigPath = "error",
-			--             invalidScreen = "error",
-			--             invalidVariant = "error",
-			--             recommendedVariants = "warn",
-			--             unsupportedCssProperty = "warn",
-			--         },
-			--     },
-			-- },
 		})
 
 		-- Nuxt Language Server
 		lspconfig.nuxt.setup({
 			filetypes = { "vue", "javascript", "typescript", "javascriptreact", "typescriptreact" },
-			-- You might need to adjust settings based on your Nuxt project structure
-			-- settings = {
-			--     nuxt = {
-			--         -- Example settings, adjust as needed
-			--         telemetry = false,
-			--     },
-			-- },
 		})
 
 		-- GraphQL Language Server

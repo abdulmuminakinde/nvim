@@ -14,54 +14,60 @@ return {
 				markdown = { "prettier" },
 				graphql = { "prettier" },
 				lua = { "stylua" },
-				python = { "isort", "ruff", "black" },
-				sql = { "sql_formatter" }, -- Using sql-formatter for SQL files
-				go = { "golines", "gofumpt" },
+				-- Simplified Python setup - ruff can handle both import sorting and formatting
+				python = { "ruff_format", "ruff_organize_imports" },
+				-- Alternative Python setup if you prefer black:
+				-- python = { "isort", "black" },
+				sql = { "sqlfmt" }, -- sqlfmt works better with stdin
+				go = { "goimports", "gofmt" }, -- Using built-in Go formatters
+				-- Vue with proper formatter
+				vue = { "prettier" },
+				-- Additional file types
+				rust = { "rustfmt" },
+				sh = { "shfmt" },
+				toml = { "taplo" },
 			},
+			-- Single format_on_save configuration (remove the autocmd)
+			format_on_save = {
+				lsp_fallback = true,
+				async = false,
+				timeout_ms = 3000,
+			},
+			-- Custom formatter configurations if needed
 			formatters = {
-				-- Go formatters
-				-- ["goimports-reviser"] = {
-				-- 	command = "goimports-reviser",
-				-- 	args = { "-rm-unused", "-set-alias", "-format", "$FILENAME" },
-				-- 	stdin = false,
+				-- Example: customize prettier for specific needs
+				prettier = {
+					options = {
+						ft_parsers = {
+							vue = "vue",
+						},
+					},
+				},
+				-- If you still want to use sql-formatter instead of sqlfmt:
+				-- sql_formatter = {
+				--   command = "sql-formatter",
+				--   args = { "-l", "postgresql", "--fix" },
+				--   stdin = true, -- Let conform handle stdin
 				-- },
-				golines = {
-					command = "golines",
-					args = { "-w", "$FILENAME" },
-					stdin = false,
-				},
-				gofumpt = {
-					command = "gofumpt",
-					args = { "-w", "$FILENAME" },
-					stdin = false,
-				},
-				-- SQL Formatter configuration
-				sql_formatter = {
-					command = "sql-formatter",
-					args = { "-l", "postgresql" }, -- Specify SQL dialect
-					stdin = false,
-				},
 			},
 		})
 
-		-- Keybinding for manual formatting
+		-- Manual formatting keymap
 		vim.keymap.set({ "n", "v" }, "<leader>mp", function()
 			conform.format({
 				lsp_fallback = true,
 				async = false,
-				timeout_ms = 2000,
+				timeout_ms = 3000,
 			})
 		end, { desc = "Format file or range (in visual mode)" })
 
-		-- Auto-format on save
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			callback = function()
-				conform.format({
-					lsp_fallback = true,
-					async = false,
-					timeout_ms = 2000, -- Adjust timeout as needed
-				})
-			end,
-		})
+		-- Optional: Add a keymap to format without LSP fallback
+		vim.keymap.set({ "n", "v" }, "<leader>mf", function()
+			conform.format({
+				lsp_fallback = false,
+				async = false,
+				timeout_ms = 3000,
+			})
+		end, { desc = "Format with conform only (no LSP)" })
 	end,
 }

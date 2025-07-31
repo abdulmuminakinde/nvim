@@ -19,8 +19,11 @@ keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
 keymap.set("n", "x", '"_x')
 
 -- increment/decrement numbers
-keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" }) -- increment
-keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
+keymap.set("n", "+", "<C-a>", { desc = "Increment number" }) -- increment
+keymap.set("n", "-", "<C-x>", { desc = "Decrement number" }) -- decrement
+
+-- Select all
+keymap.set("n", "<C-a>", "gg<S-v>G", { desc = "Select all" })
 
 -- save file
 keymap.set("n", "<C-s>", "<cmd>w<CR>", opts) -- use ctrl + s to save file

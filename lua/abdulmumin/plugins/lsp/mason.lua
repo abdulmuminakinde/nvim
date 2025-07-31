@@ -1,7 +1,7 @@
 return {
 	"williamboman/mason.nvim",
 	dependencies = {
-		"williamboman/mason-lspconfig.nvim",
+		"mason-org/mason-lspconfig.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 	},
 	config = function()
@@ -26,13 +26,13 @@ return {
 			-- list of servers for mason to install
 			ensure_installed = {
 				-- Core web technologies
-				"ts_ls", -- TypeScript/JavaScript
+				-- Removed "ts_ls" as "vtsls" handles TypeScript/JavaScript for Vue projects
 				"html", -- HTML
 				"cssls", -- CSS
 				"tailwindcss", -- TailwindCSS
 				"emmet_ls", -- Emmet
 				"eslint", -- ESLint
-				"vtsls", -- TypeScript/JavaScript
+				"vtsls", -- TypeScript/JavaScript (Volar's TS server, handles all TS/JS needs)
 
 				-- Frameworks
 				"vue_ls", -- Vue (official)
